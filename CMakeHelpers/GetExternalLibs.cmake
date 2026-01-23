@@ -1,6 +1,6 @@
-MACRO (GetExternalLibs ExternalLib ExternalLibTarget)
+MACRO (InstallExternalLib ExternalLib ExternalLibTarget)
 
-    CMAKE_PARSE_ARGUMENTS(GetExternalLibs
+    CMAKE_PARSE_ARGUMENTS(InstallExternalLib
         ""
         ""
         ""
