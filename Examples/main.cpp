@@ -13,6 +13,7 @@ int main()
     SSLogger::PLOG()->info("test info");
     SSLogger::PINFO("test info static");
     (*SSLogger::PLOG())(SSLogger::logLevel::pINFO) << "Another way to do it...\n";
+    (*SSLogger::PLOG()) << "Yet another way to do it...\n";
 
     SSLogger::PDEBUG("Test debug");
 #ifdef APP_DEBUG

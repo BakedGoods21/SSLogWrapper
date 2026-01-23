@@ -5,19 +5,10 @@ BUILD_FOLDER=$ROOT_DIR/build
 INSTALL_FOLDER=$BUILD_FOLDER/install
 
 CONFIG=Release
-ADDITIONAL_FLAGS=$()
+ADDITIONAL_FLAGS=()
 while [[ $# -gt 0 ]]; do
     key=$1
     case $key in
-        -d|--debug)
-        shift # Consume Argument
-        CONFIG=Debug
-        ;;
-        -c|--config)
-        shift # Consume Argument
-        CONFIG="$1"
-        shift # Consume Argument
-        ;;
         *)
         ADDITIONAL_FLAGS+=("$1")
         shift # Consume Argument
