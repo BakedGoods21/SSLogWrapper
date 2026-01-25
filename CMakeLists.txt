@@ -1,4 +1,5 @@
-include(CMakeHelpers/GetExternalLibs.cmake)
+include(CMakeHelpers/InstallExternalLibs.cmake)
+include(CMakeHelpers/GenerateSimpleConfig/GenerateSimpleConfig.cmake)
 
 cmake_minimum_required(VERSION 3.31)
 
