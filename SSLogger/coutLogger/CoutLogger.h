@@ -8,7 +8,7 @@
 namespace SSLogger
 {
 
-    class CoutLogger : public IFileLogger
+    class SSLOGWRAPPER_LOCAL CoutLogger : public IFileLogger
     {
     public:
         CoutLogger() = default;

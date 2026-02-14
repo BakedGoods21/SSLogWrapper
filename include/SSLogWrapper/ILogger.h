@@ -1,8 +1,48 @@
 #pragma once
 
+// Generic helper definitions for shared library support
+#if defined _WIN32 || defined __CYGWIN__
+  #define SSLOGWRAPPER_IMPORT_ATTRIB __declspec(dllimport)
+  #define SSLOGWRAPPER_EXPORT_ATTRIB __declspec(dllexport)
+  #define SSLOGWRAPPER_LOCAL_ATTRIB
+#else
+  #if __GNUC__ >= 4
+    #define SSLOGWRAPPER_IMPORT_ATTRIB __attribute__ ((visibility ("default")))
+    #define SSLOGWRAPPER_EXPORT_ATTRIB __attribute__ ((visibility ("default")))
+    #define SSLOGWRAPPER_LOCAL_ATTRIB __attribute__ ((visibility ("hidden")))
+  #else
+    #define SSLOGWRAPPER_IMPORT_ATTRIB
+    #define SSLOGWRAPPER_EXPORT_ATTRIB
+    #define SSLOGWRAPPER_LOCAL_ATTRIB
+  #endif
+#endif
+
+// Now we use the generic helper definitions above to define SSLOGWRAPPER_API and SSLOGWRAPPER_LOCAL.
+// SSLOGWRAPPER_API is used for the public API symbols. It either DLL imports or DLL exports (or does nothing for static build)
+// SSLOGWRAPPER_LOCAL is used for non-api symbols.
+
+#ifdef SSLOGWRAPPER_DLL // defined if SSLOGWRAPPER is compiled as a DLL
+  #ifdef SSLOGWRAPPER_DLL_EXPORTS // defined if we are building the SSLOGWRAPPER DLL (instead of using it)
+    #define SSLOGWRAPPER_API SSLOGWRAPPER_EXPORT_ATTRIB
+    #define SSLOGWRAPPER_API_C extern "C" SSLOGWRAPPER_EXPORT_ATTRIB
+  #else
+    #define SSLOGWRAPPER_API SSLOGWRAPPER_IMPORT_ATTRIB
+    #define SSLOGWRAPPER_API_C extern "C" SSLOGWRAPPER_IMPORT_ATTRIB
+  #endif // SSLOGWRAPPER_DLL_EXPORTS
+  #define SSLOGWRAPPER_LOCAL SSLOGWRAPPER_LOCAL_ATTRIB
+  #define SSLOGWRAPPER_LOCAL_C extern "C" SSLOGWRAPPER_LOCAL_ATTRIB
+#else // SSLOGWRAPPER_DLL is not defined: this means SSLOGWRAPPER is a static lib.
+  #define SSLOGWRAPPER_API
+  #define SSLOGWRAPPER_API_C extern "C" 
+  #define SSLOGWRAPPER_LOCAL
+  #define SSLOGWRAPPER_LOCAL_C extern "C"
+#endif // SSLOGWRAPPER_DLL
+
+
 #include <memory>
 #include <string>
 #include <cassert>
+
 
 namespace SSLogger
 {
@@ -17,7 +57,7 @@ namespace SSLogger
     };
 
 
-    class ILogger
+    class SSLOGWRAPPER_API ILogger
     {
     public:
         ILogger() = default;
@@ -57,7 +97,7 @@ namespace SSLogger
         void log(const std::string& message);
     };
 
-    class IFileLogger : public ILogger
+    class SSLOGWRAPPER_API IFileLogger : public ILogger
     {
     public:
         IFileLogger() = default;
@@ -66,25 +106,17 @@ namespace SSLogger
         virtual void setLogFile(const std::string& logFile) = 0;
     };
 
-    const std::unique_ptr<ILogger>& PLOG();
+    SSLOGWRAPPER_LOCAL std::shared_ptr<ILogger> PLOG();
+    SSLOGWRAPPER_LOCAL void _setPLogger(std::shared_ptr<ILogger> newLogger);
 
-    template<typename T>
-    static void setPLogger(T&& newLogger)
+    template <typename T, typename... Args>
+    SSLOGWRAPPER_API void setPLogger(Args... rest_args)
     {
-        PLOG() = std::make_unique<T>(std::move(newLogger));
+        _setPLogger(std::make_shared<T>(T(rest_args...)));
     }
 
-    static void setLogFile(const std::string& logFile)
-    {
-        assert(dynamic_cast<IFileLogger*>(PLOG().get()) && "PLOG() is not of type IFileLogger, cannot set file");
-
-        dynamic_cast<IFileLogger*>(PLOG().get())->setLogFile(logFile);
-    }
-
-    static void setLevel(logLevel newGlobalLogLevel)
-    {
-        PLOG()->setGlobalLogLevel(newGlobalLogLevel);
-    }
+    SSLOGWRAPPER_API_C void setLogFile(const std::string& logFile);
+    SSLOGWRAPPER_API_C void setLevel(logLevel newGlobalLogLevel);
 
 // The following #define's are used so that the user can do PTRACE("Message") or PTRACE() and it'll print the file, function, and line number it was called from along with the optional massage 
 #define PTRACE_0(_) s_trace("Trace", __func__, __FILE__, __LINE__)
@@ -92,50 +124,32 @@ namespace SSLogger
 
 #define GET_MACRO(_1,_2,NAME,...) NAME
 #define PTRACE(...) GET_MACRO(__VA_ARGS__,PTRACE_1,PTRACE_0)(__VA_ARGS__)
-    static void s_trace(const std::string& message,
+    SSLOGWRAPPER_API_C void s_trace(const std::string& message,
                       const char* func,
                       const char* file,
-                      int line)
-    {
-        PLOG()->trace(message, func, file, line);
-    }
+                      int line);
 
 // The following #define is used so that the user can do PDEBUG("Message") and it'll print the file, function, and line number it was called from along with the debug massage 
 #define PDEBUG(msg) s_debug(msg, __func__, __FILE__, __LINE__)
-    static void s_debug(const std::string& message,
+    SSLOGWRAPPER_API_C void s_debug(const std::string& message,
                       const char* func,
                       const char* file,
-                      int line)
-    {
-        PLOG()->debug(message, func, file, line);
-    }
+                      int line);
 
 // The following #define is used solely to match the PTRACE and PDEBUG statements
 #define PINFO(msg) s_info(msg)
-    static void s_info(const std::string& message)
-    {
-        PLOG()->info(message);
-    }
+    SSLOGWRAPPER_API_C void s_info(const std::string& message);
 
 // The following #define is used solely to match the PTRACE and PDEBUG statements
 #define PWARN(msg) s_warn(msg)
-    static void s_warn(const std::string& message)
-    {
-        PLOG()->warn(message);
-    }
+    SSLOGWRAPPER_API_C void s_warn(const std::string& message);
 
 // The following #define is used solely to match the PTRACE and PDEBUG statements
 #define PERROR(msg) s_error(msg)
-    static void s_error(const std::string& message)
-    {
-        PLOG()->error(message);
-    }
+    SSLOGWRAPPER_API_C void s_error(const std::string& message);
 
 // The following #define is used solely to match the PTRACE and PDEBUG statements
 #define PFATAL(msg) s_fatal(msg)
-    static void s_fatal(const std::string& message)
-    {
-        PLOG()->fatal(message);
-    }
+    SSLOGWRAPPER_API_C void s_fatal(const std::string& message);
 }
 

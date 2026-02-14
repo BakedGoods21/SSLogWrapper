@@ -13,7 +13,7 @@
 
 namespace SSLogger
 {
-    class SpdLogger : public IFileLogger
+    class SSLOGWRAPPER_LOCAL SpdLogger : public IFileLogger
     {
     public:
         SpdLogger();
