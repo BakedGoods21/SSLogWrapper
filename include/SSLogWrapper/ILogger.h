@@ -106,8 +106,8 @@ namespace SSLogger
         virtual void setLogFile(const std::string& logFile) = 0;
     };
 
-    SSLOGWRAPPER_LOCAL std::shared_ptr<ILogger> PLOG();
-    SSLOGWRAPPER_LOCAL void _setPLogger(std::shared_ptr<ILogger> newLogger);
+    SSLOGWRAPPER_API_C std::shared_ptr<ILogger> PLOG();
+    SSLOGWRAPPER_API_C void _setPLogger(std::shared_ptr<ILogger> newLogger);
 
     template <typename T, typename... Args>
     SSLOGWRAPPER_API void setPLogger(Args... rest_args)
