@@ -1,9 +1,11 @@
 project(simple_app_with_examples)
 
 set(H_FILES
+    CustomLogger.h
 )
 
 set(CPP_FILES
+    CustomLogger.cpp
     main.cpp
 )
 

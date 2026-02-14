@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <memory>
 
+#include "CustomLogger.h"
 #include "SSLogWrapper/ILogger.h"
 
 int main()
@@ -21,6 +22,10 @@ int main()
 #endif
     SSLogger::PDEBUG("Test debug1");
 
+    SSLogger::PINFO("Set CustomLogger as logger");
+    SSLogger::setPLogger<CustomLogger>(CustomLogger());
+    SSLogger::PINFO("...Set");
+    
     return EXIT_SUCCESS;
 }
 
