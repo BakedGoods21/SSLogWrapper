@@ -2,19 +2,19 @@
 
 // Generic helper definitions for shared library support
 #if defined _WIN32 || defined __CYGWIN__
-  #define SSLOGWRAPPER_IMPORT_ATTRIB __declspec(dllimport)
-  #define SSLOGWRAPPER_EXPORT_ATTRIB __declspec(dllexport)
-  #define SSLOGWRAPPER_LOCAL_ATTRIB
-#else
-  #if __GNUC__ >= 4
-    #define SSLOGWRAPPER_IMPORT_ATTRIB __attribute__ ((visibility ("default")))
-    #define SSLOGWRAPPER_EXPORT_ATTRIB __attribute__ ((visibility ("default")))
-    #define SSLOGWRAPPER_LOCAL_ATTRIB __attribute__ ((visibility ("hidden")))
-  #else
-    #define SSLOGWRAPPER_IMPORT_ATTRIB
-    #define SSLOGWRAPPER_EXPORT_ATTRIB
+    #define SSLOGWRAPPER_IMPORT_ATTRIB __declspec(dllimport)
+    #define SSLOGWRAPPER_EXPORT_ATTRIB __declspec(dllexport)
     #define SSLOGWRAPPER_LOCAL_ATTRIB
-  #endif
+#else
+    #if __GNUC__ >= 4
+        #define SSLOGWRAPPER_IMPORT_ATTRIB __attribute__ ((visibility ("default")))
+        #define SSLOGWRAPPER_EXPORT_ATTRIB __attribute__ ((visibility ("default")))
+        #define SSLOGWRAPPER_LOCAL_ATTRIB __attribute__ ((visibility ("hidden")))
+    #else
+        #define SSLOGWRAPPER_IMPORT_ATTRIB
+        #define SSLOGWRAPPER_EXPORT_ATTRIB
+        #define SSLOGWRAPPER_LOCAL_ATTRIB
+    #endif
 #endif
 
 // Now we use the generic helper definitions above to define SSLOGWRAPPER_API and SSLOGWRAPPER_LOCAL.
@@ -22,17 +22,16 @@
 // SSLOGWRAPPER_LOCAL is used for non-api symbols.
 
 #ifdef SSLOGWRAPPER_DLL // defined if SSLOGWRAPPER is compiled as a DLL
-  #ifdef SSLOGWRAPPER_DLL_EXPORTS // defined if we are building the SSLOGWRAPPER DLL (instead of using it)
-    #define SSLOGWRAPPER_API SSLOGWRAPPER_EXPORT_ATTRIB
-  #else
-    #define SSLOGWRAPPER_API SSLOGWRAPPER_IMPORT_ATTRIB
-  #endif // SSLOGWRAPPER_DLL_EXPORTS
-  #define SSLOGWRAPPER_LOCAL SSLOGWRAPPER_LOCAL_ATTRIB
+    #ifdef SSLOGWRAPPER_DLL_EXPORTS // defined if we are building the SSLOGWRAPPER DLL (instead of using it)
+        #define SSLOGWRAPPER_API SSLOGWRAPPER_EXPORT_ATTRIB
+    #else
+        #define SSLOGWRAPPER_API SSLOGWRAPPER_IMPORT_ATTRIB
+    #endif // SSLOGWRAPPER_DLL_EXPORTS
+    #define SSLOGWRAPPER_LOCAL SSLOGWRAPPER_LOCAL_ATTRIB
 #else // SSLOGWRAPPER_DLL is not defined: this means SSLOGWRAPPER is a static lib.
-  #define SSLOGWRAPPER_API
-  #define SSLOGWRAPPER_LOCAL
+    #define SSLOGWRAPPER_API
+    #define SSLOGWRAPPER_LOCAL
 #endif // SSLOGWRAPPER_DLL
-
 
 #include <memory>
 #include <string>
