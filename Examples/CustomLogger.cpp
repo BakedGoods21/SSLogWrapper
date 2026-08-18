@@ -83,6 +83,6 @@ void CustomLogger::fatal(const std::string& message)
     {
         plogOtf << "Custom FATAL: " << message << "\n";
     }
-    throw std::runtime_error("Custom FETAL: " + message);
+    throw std::runtime_error("Custom FATAL: " + message);
 }
 

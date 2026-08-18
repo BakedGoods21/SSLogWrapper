@@ -26,6 +26,6 @@ public:
     void error(const std::string& message) override;  // A serious issue occurred, but the program can still run (maybe shutting off a particular feature or button press)
     void fatal(const std::string& message) override;  // Very severe error, often requiring immediate attention (application usually exits)
 
-    void setGlobalLogLevel(const SSLogger::logLevel& newLogLevel);
+    void setGlobalLogLevel(const SSLogger::logLevel& newLogLevel) override;
 };
 

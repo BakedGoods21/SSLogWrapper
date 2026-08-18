@@ -8,11 +8,11 @@
 namespace SSLogger
 {
 
-    class SSLOGWRAPPER_LOCAL CoutLogger : public IFileLogger
+    class SSLOGWRAPPER_LOCAL AndroidLogger : public IFileLogger
     {
     public:
-        CoutLogger() = default;
-        ~CoutLogger() = default;
+        AndroidLogger() = default;
+        ~AndroidLogger() = default;
 
         void setLogFile(const std::string& logFile) override;
 

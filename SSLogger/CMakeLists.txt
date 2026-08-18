@@ -1,5 +1,6 @@
 find_package(spdlog QUIET)
 option(ENABLE_SPDLOG "Enable 3rd-party logger 'spdlog`" ON)
+option(ENABLE_ANDROID "Enable android logger" ON)
 
 project(logger
     VERSION 0.0.1
@@ -15,6 +16,15 @@ set(CPP_FILES
 if(${ENABLE_SPDLOG})
     set(H_FILES "${H_FILES};spdlogWrapper/SpdLogWrapper.h")
     set(CPP_FILES "${CPP_FILES};spdlogWrapper/SpdLogWrapper.cpp")
+elseif(${ENABLE_ANDROID})
+    set(H_FILES "${H_FILES};androidLogger/AndroidLogger.h")
+    set(CPP_FILES "${CPP_FILES};androidLogger/AndroidLogger.cpp")
+
+    find_library(
+      log-lib
+      log
+    )
+
 else()
     set(H_FILES "${H_FILES};coutLogger/CoutLogger.h")
     set(CPP_FILES "${CPP_FILES};coutLogger/CoutLogger.cpp")
@@ -30,6 +40,7 @@ add_library(${CMAKE_PROJECT_NAME}::${CMAKE_PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
         $<$<BOOL:${ENABLE_SPDLOG}>:spdlog::spdlog>
+        $<$<BOOL:${ENABLE_ANDROID}>:${log-lib}>
 )
 
 target_include_directories(${PROJECT_NAME}

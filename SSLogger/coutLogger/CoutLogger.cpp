@@ -85,6 +85,6 @@ namespace SSLogger
         {
             plogOtf << "FATAL: " << message << "\n";
         }
-        throw std::runtime_error("FETAL: " + message);
+        throw std::runtime_error("FATAL: " + message);
     }
 }
